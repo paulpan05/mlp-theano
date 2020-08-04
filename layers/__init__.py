@@ -7,6 +7,7 @@ class Dense:
     def __init__(self, units, n_inputs=None, activation='relu'):
         self.units = units
         self.n_inputs = n_inputs
+        self.act_name = activation
         if activation == 'relu':
             self.activation = relu
             self.back_activation = back_relu
@@ -15,13 +16,9 @@ class Dense:
             self.back_activation = back_sigmoid
         else:
             raise Exception('Non-supported activation function')
-    def load(self, weights=None, biases=None):
-        if not weights:
-            weights = 0.10 * np.random.randn(self.units, self.n_inputs)
-        if not biases:
-            biases = np.zeros((self.units, 1))
-        self.weights = theano.shared(weights, 'weights')
-        self.biases = theano.shared(biases, 'biases', broadcastable=(True, False))
+    def load(self):
+        self.weights = theano.shared(0.10 * np.random.randn(self.units, self.n_inputs), 'weights')
+        self.biases = theano.shared(np.zeros((self.units, 1)), 'biases', broadcastable=(True, False))
     def forward(self, A_prev):
         self.Z = T.dot(self.weights, A_prev) + self.biases
         self.A = self.activation(self.z)
@@ -31,3 +28,20 @@ class Dense:
         self.dW = T.dot(dZ, A_prev.T) / m
         self.db = T.sum(dZ, axis=1, keepdims=True) / m
         self.dA = T.dot(self.weights.T, dZ)
+    def __getstate__(self):
+        return (self.weights, self.biases, self.units, self.n_inputs, self.act_name)
+    def __setstate__(self, state):
+        W, b, u, n, act = state
+        self.weights = W
+        self.biases = b
+        self.units = u
+        self.n_inputs = n
+        self.act_name = act
+        if act == 'relu':
+            self.activation = relu
+            self.back_activation = back_relu
+        elif act == 'sigmoid':
+            self.activation = sigmoid
+            self.back_activation = back_sigmoid
+        else:
+            raise Exception('Non-supported activation function')
