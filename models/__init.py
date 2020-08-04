@@ -14,9 +14,40 @@ class Sequential:
     def compile(self, learning_rate=None):
         for layer in layers:
             layer.__load()
-    def fit(self, X, y, epochs, learning_rate=0.1):
+    def fit(self, X, Y, epochs, learning_rate=0.1):
         for i in range(epochs):
-            pass
+            Y_hat = self.__feedforward(X)
+            cost = self.__get_cost_value(Y_hat, Y)
+            if self.best_loss == None or cost < self.best_loss:
+                self.best_loss = cost
+            accuracy = self.__get_accuracy_value(Y_hat, Y)
+            print('Cost: ' + cost)
+            print('Accuracy: ' + accuracy)
+            self.__backprop(X, Y_hat, Y)
+            self.__update(learning_rate)
+    def __feedforward(self, X):
+        A = X
+        for layer in self.layers:
+            layer.__forward(A)
+            A = layer.A
+        return A
+    def __backprop(self, X, Y_hat, Y):
+        m = Y.shape[1]
+        Y = Y.reshape(Y_hat.shape)
+        dA = - ((Y / Y_hat) - ((1 - Y) / (1 - Y_hat)))
+        i = len(self.layers) - 1
+        while i >= 0:
+            A_prev
+            if i == 0:
+                A_prev = X
+            else:
+                A_prev = self.layers[i-1].A
+            self.layers[i].__backward(dA, A_prev)
+            i -= 1
+    def __update(self, learning_rate):
+        for layer in self.layers:
+            layer.weights -= learning_rate * layer.dW
+            layer.biases -= learning_rate * layer.db
     def __get_cost_value(self, Y_hat, Y):
         m = Y_hat.shape[1]
         cost = -1 / m * (T.dot(Y, T.log(Y_hat).T) + T.dot(1 - Y, T.log(1 - Y_hat).T))
