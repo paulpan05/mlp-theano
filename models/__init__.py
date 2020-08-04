@@ -1,3 +1,4 @@
+import theano
 import theano.tensor as T
 
 class Sequential:
@@ -11,9 +12,9 @@ class Sequential:
         else:
             layer.n_inputs = self.layers[-1].units
         self.layers.append(layer)
-    def compile(self, learning_rate=None):
-        for layer in layers:
-            layer.__load()
+    def compile(self):
+        for layer in self.layers:
+            layer._Dense__load()
     def fit(self, X, Y, epochs, learning_rate=0.1):
         for i in range(epochs):
             Y_hat = self.__feedforward(X)
@@ -28,7 +29,7 @@ class Sequential:
     def __feedforward(self, X):
         A = X
         for layer in self.layers:
-            layer.__forward(A)
+            layer._Dense__forward(A)
             A = layer.A
         return A
     def __backprop(self, X, Y_hat, Y):
@@ -50,7 +51,14 @@ class Sequential:
             layer.biases -= learning_rate * layer.db
     def __get_cost_value(self, Y_hat, Y):
         m = Y_hat.shape[1]
-        cost = -1 / m * (T.dot(Y, T.log(Y_hat).T) + T.dot(1 - Y, T.log(1 - Y_hat).T))
+        cost = -1 / m * (
+            T.dot(
+                Y, T.log(Y_hat).T
+                ) + T.dot(
+                    1 - Y,
+                    T.log(1 - Y_hat).T
+                    )
+                    )
         return T.squeeze(cost)
     def __get_accuracy_value(self, Y_hat, Y):
         Y_hat_ = self.__convert_prob_into_class(Y_hat)

@@ -21,7 +21,7 @@ class Dense:
         self.biases = theano.shared(np.zeros((self.units, 1)), 'biases', broadcastable=(False, True))
     def __forward(self, A_prev):
         self.Z = T.dot(self.weights, A_prev) + self.biases
-        self.A = self.activation(self.z)
+        self.A = self.activation(self.Z)
     def __backward(self, dA, A_prev):
         m = A_prev.shape[1]
         dZ = self.back_activation(dA, self.Z)
