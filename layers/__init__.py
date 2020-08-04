@@ -18,7 +18,7 @@ class Dense:
             raise Exception('Non-supported activation function')
     def load(self):
         self.weights = theano.shared(0.10 * np.random.randn(self.units, self.n_inputs), 'weights')
-        self.biases = theano.shared(np.zeros((self.units, 1)), 'biases', broadcastable=(True, False))
+        self.biases = theano.shared(np.zeros((self.units, 1)), 'biases', broadcastable=(False, True))
     def forward(self, A_prev):
         self.Z = T.dot(self.weights, A_prev) + self.biases
         self.A = self.activation(self.z)
