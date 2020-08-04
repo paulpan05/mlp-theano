@@ -15,12 +15,14 @@ class Sequential:
     def compile(self):
         for layer in self.layers:
             layer._Dense__load()
-    def fit(self, X, Y, epochs, learning_rate=0.1):
+    def fit(self, X, Y, epochs, learning_rate=0.01):
         for i in range(epochs):
             Y_hat = self.__feedforward(X)
             cost = self.__get_cost_value(Y_hat, Y)
-            if self.best_loss == None or cost < self.best_loss:
-                self.best_loss = cost
+            total_cost = T.sum(cost).eval()
+            print(total_cost)
+            if self.best_loss == None or total_cost < self.best_loss:
+                self.best_loss = total_cost
             accuracy = self.__get_accuracy_value(Y_hat, Y)
             self.__backprop(X, Y_hat, Y)
             self.__update(learning_rate)
@@ -46,8 +48,8 @@ class Sequential:
             i -= 1
     def __update(self, learning_rate):
         for layer in self.layers:
-            layer.weights -= learning_rate * layer.dW
-            layer.biases -= learning_rate * layer.db
+            layer.weights = (layer.weights - learning_rate * layer.dW).eval()
+            layer.biases = (layer.biases - learning_rate * layer.db).eval()
     def __get_cost_value(self, Y_hat, Y):
         m = Y_hat.shape[1]
         cost = -1 / m * (T.dot(Y, T.log(Y_hat).T) + T.dot(T.sub(1, Y), T.log(1 - Y_hat).T))
