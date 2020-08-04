@@ -28,4 +28,8 @@ class Dense:
         self.Z = T.dot(self.weights, A_prev) + self.biases
         self.A = self.activation(self.z)
     def backward(self, dA, A_prev):
+        m = A_prev.shape[1]
         dZ = self.back_activation(dA, self.Z)
+        self.dW = T.dot(dZ, A_prev.T) / m
+        self.db = T.sum(dZ, axis=1, keepdims=True) / m
+        self.dA = T.dot(self.weights.T, dZ)
