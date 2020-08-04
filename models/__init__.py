@@ -18,6 +18,7 @@ class Sequential:
     def fit(self, X, Y, epochs, learning_rate=0.1):
         for i in range(epochs):
             Y_hat = self.__feedforward(X)
+            print(Y_hat.eval())
             cost = self.__get_cost_value(Y_hat, Y)
             if self.best_loss == None or cost < self.best_loss:
                 self.best_loss = cost
@@ -42,6 +43,7 @@ class Sequential:
             else:
                 A_prev = self.layers[i-1].A
             self.layers[i]._Dense__backward(dA, A_prev)
+            dA = self.layers[i].dA
             i -= 1
     def __update(self, learning_rate):
         for layer in self.layers:
