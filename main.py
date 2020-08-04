@@ -1,9 +1,9 @@
+import pickle
 import numpy as np
 import theano
-import theano.tensor as T
+from mnist import MNIST
 from layers import Dense
 from models import Sequential
-from mnist import MNIST
 
 theano.config.gcc.cxxflags = "-Wno-c++11-narrowing"
 
@@ -32,4 +32,7 @@ model.add(Dense(1024))
 model.add(Dense(1024))
 model.add(Dense(Y.shape[0], activation='sigmoid'))
 model.compile()
+
+# model = pickle.load(open('model.p', 'rb'))
+
 model.fit(X, Y, 1)

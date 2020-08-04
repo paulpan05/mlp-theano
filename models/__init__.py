@@ -1,3 +1,4 @@
+import pickle
 import theano
 import theano.tensor as T
 
@@ -25,13 +26,13 @@ class Sequential:
                 Y_hat = self.__feedforward(X_cur)
                 cost = self.__get_cost_value(Y_hat, Y_cur)
                 total_cost = T.sum(cost).eval()
-                print('Loss: ' + str(total_cost))
                 if self.best_loss == None or total_cost < self.best_loss:
                     self.best_loss = total_cost
-                accuracy = self.__get_accuracy_value(Y_hat, Y_cur)
-                # print('Accuracy: ' + accuracy)
+                accuracy = self.__get_accuracy_value(Y_hat, Y_cur).eval()
+                print('Epoch '+ str(i + 1) +' - ' + str(n + 1) + '/' + str((n_samples // batch_size) + 1) + ' Loss: ' + str(total_cost) + ' Accuracy: ' + str(accuracy), end='\r', flush=True)
                 self.__backprop(X_cur, Y_hat, Y_cur)
                 self.__update(learning_rate)
+                pickle.dump(self, open('model.p', 'wb'))
                 n += 1
     def __feedforward(self, X):
         A = X
