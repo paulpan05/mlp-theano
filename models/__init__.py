@@ -25,16 +25,16 @@ class Sequential:
                 Y_hat = self.__feedforward(X_cur)
                 cost = self.__get_cost_value(Y_hat, Y_cur)
                 total_cost = T.sum(cost).eval()
-                print(total_cost)
+                print('Loss: ' + str(total_cost))
                 if self.best_loss == None or total_cost < self.best_loss:
                     self.best_loss = total_cost
                 accuracy = self.__get_accuracy_value(Y_hat, Y_cur)
+                # print('Accuracy: ' + accuracy)
                 self.__backprop(X_cur, Y_hat, Y_cur)
                 self.__update(learning_rate)
                 n += 1
     def __feedforward(self, X):
         A = X
-        print(A.shape)
         for layer in self.layers:
             layer._Dense__forward(A)
             A = layer.A
