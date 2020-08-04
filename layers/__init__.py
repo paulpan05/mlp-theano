@@ -19,13 +19,13 @@ class Dense:
         if weights:
             self.weights = weights
         else:
-            self.weights = theano.shared(0.10 * np.random.randn(self.n_inputs, self.units), 'weights')
+            self.weights = theano.shared(0.10 * np.random.randn(self.units, self.n_inputs), 'weights')
         if biases:
             self.biases = biases
         else:
-            self.biases = theano.shared(np.zeros((1, self.units)), 'biases', broadcastable=(True, False))
-    def forward(self, inputs):
-        self.Z = T.dot(inputs, self.weights) + self.biases
+            self.biases = theano.shared(np.zeros((self.units, 1)), 'biases', broadcastable=(True, False))
+    def forward(self, A_prev):
+        self.Z = T.dot(self.weights, A_prev) + self.biases
         self.A = self.activation(self.z)
-    def backward(self, dA):
+    def backward(self, dA, A_prev):
         dZ = self.back_activation(dA, self.Z)
