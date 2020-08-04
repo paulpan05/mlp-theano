@@ -15,19 +15,26 @@ class Sequential:
     def compile(self):
         for layer in self.layers:
             layer._Dense__load()
-    def fit(self, X, Y, epochs, learning_rate=0.01):
+    def fit(self, X, Y, epochs, batch_size=32, learning_rate=0.01):
+        n = 0
+        n_samples = X.shape[1]
         for i in range(epochs):
-            Y_hat = self.__feedforward(X)
-            cost = self.__get_cost_value(Y_hat, Y)
-            total_cost = T.sum(cost).eval()
-            print(total_cost)
-            if self.best_loss == None or total_cost < self.best_loss:
-                self.best_loss = total_cost
-            accuracy = self.__get_accuracy_value(Y_hat, Y)
-            self.__backprop(X, Y_hat, Y)
-            self.__update(learning_rate)
+            while n * batch_size < n_samples:
+                X_cur = X[:, n * batch_size : min((n + 1) * batch_size, n_samples - 1)]
+                Y_cur = Y[:, n * batch_size : min((n + 1) * batch_size, n_samples - 1)]
+                Y_hat = self.__feedforward(X_cur)
+                cost = self.__get_cost_value(Y_hat, Y_cur)
+                total_cost = T.sum(cost).eval()
+                print(total_cost)
+                if self.best_loss == None or total_cost < self.best_loss:
+                    self.best_loss = total_cost
+                accuracy = self.__get_accuracy_value(Y_hat, Y_cur)
+                self.__backprop(X_cur, Y_hat, Y_cur)
+                self.__update(learning_rate)
+                n += 1
     def __feedforward(self, X):
         A = X
+        print(A.shape)
         for layer in self.layers:
             layer._Dense__forward(A)
             A = layer.A

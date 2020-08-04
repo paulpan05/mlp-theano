@@ -5,23 +5,31 @@ from layers import Dense
 from models import Sequential
 from mnist import MNIST
 
-X = np.array([[1, 0.8, 1, 0],
-[1, 1, 0.9, 0],
-[0.8, 1, 0.8, 1]])
-
-Y = np.array([[0, 1, 0, 0],
-[1, 0, 1, 0],
-[0, 0, 0, 1]], dtype=theano.config.floatX)
-
 theano.config.gcc.cxxflags = "-Wno-c++11-narrowing"
 
-mndata = MNIST('./samples')
-images, labels = mndata.load_training()
-print(len(labels))
-print(len(images))
+def parse_data():
+    mndata = MNIST('./samples')
+    images, labels = mndata.load_training()
 
-# model = Sequential()
-#model.add(Dense(512, n_inputs=3))
-#model.add(Dense(3, activation='sigmoid'))
-#model.compile()
-#model.fit(X, Y, 100)
+    vocab = set()
+    for label in labels:
+        vocab.add(label)
+    vocab = sorted(vocab)
+    Y = []
+    for label in labels:
+        one_hot = [0] * len(vocab)
+        one_hot[label] = 1
+        Y.append(one_hot)
+    X = np.array(images).T / 255
+    Y = np.array(Y).T
+    return (X, Y)
+
+X, Y = parse_data()
+
+model = Sequential()
+model.add(Dense(1024, n_inputs=X.shape[0]))
+model.add(Dense(1024))
+model.add(Dense(1024))
+model.add(Dense(Y.shape[0], activation='sigmoid'))
+model.compile()
+model.fit(X, Y, 1)
