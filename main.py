@@ -35,4 +35,4 @@ model.compile()
 
 # model = pickle.load(open('model.p', 'rb'))
 
-model.fit(X, Y, 1)
+model.fit(X, Y, 1, learning_rate=0.003)

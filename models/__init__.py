@@ -56,8 +56,8 @@ class Sequential:
             i -= 1
     def __update(self, learning_rate):
         for layer in self.layers:
-            layer.weights = (layer.weights - learning_rate * layer.dW).eval()
-            layer.biases = (layer.biases - learning_rate * layer.db).eval()
+            layer.weights.set_value((layer.weights - learning_rate * layer.dW).eval())
+            layer.biases.set_value((layer.biases - learning_rate * layer.db).eval())
     def __get_cost_value(self, Y_hat, Y):
         m = Y_hat.shape[1]
         cost = -1 / m * (T.dot(Y, T.log(Y_hat).T) + T.dot(T.sub(1, Y), T.log(1 - Y_hat).T))
