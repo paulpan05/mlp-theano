@@ -88,16 +88,21 @@ class Sequential:
         """
         m = Y.shape[1]
         Y = Y.reshape(Y_hat.shape.eval())
+
+        # Compute the gradient of the output layer
         dA = - ((Y / Y_hat) - ((1 - Y) / (1 - Y_hat)))
         i = len(self.layers) - 1
         while i >= 0:
+
+            # Get activation of the previous layer
             A_prev = None
             if i == 0:
                 A_prev = X
             else:
                 A_prev = self.layers[i-1].A
-            self.layers[i]._Dense__backward(dA, A_prev)
-            dA = self.layers[i].dA
+            
+            # Compute gradient for the next layer down
+            dA = self.layers[i]._Dense__backward(dA, A_prev)
             i -= 1
 
     def __update(self, learning_rate):

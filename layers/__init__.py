@@ -16,7 +16,6 @@ class Dense:
         biases (theano.compile.sharedvalue.SharedVariable): The biases of the layer.
         dW (np.ndarray): The change in weights of the layer.
         db (np.ndarray): The change in biases of the network.
-        dA (np.ndarray): The change in biases of the network.
     """
 
     def __init__(self, units, n_inputs=None, activation='relu'):
@@ -59,12 +58,21 @@ class Dense:
         Args:
             dA: The change in activation of the current layer.
             A_prev: the activation of the previous layer.
+        
+        Returns:
+            np.ndarray: The gradient of the next layer.
         """
         m = A_prev.shape[1]
+
+        # Backward activation function
         dZ = self.back_activation(dA, self.Z)
+
+        # Calculate the change in weights and biases
         self.dW = T.dot(dZ, A_prev.T) / m
         self.db = T.sum(dZ, axis=1, keepdims=True) / m
-        self.dA = T.dot(self.weights.T, dZ)
+
+        # Return the gradient of the next layer
+        return T.dot(self.weights.T, dZ)
 
     def __getstate__(self):
         """Gets the state of the object to be pickled by Python.
