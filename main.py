@@ -8,6 +8,11 @@ from models import Sequential
 theano.config.gcc.cxxflags = "-Wno-c++11-narrowing"
 
 def parse_data():
+    """Parses the data of MNIST database.
+    
+    Returns:
+        (np.ndarray, np.ndarray): The inputs and labels to the network.
+    """
     mndata = MNIST('./samples')
     images, labels = mndata.load_training()
 
